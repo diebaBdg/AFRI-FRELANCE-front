@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "role": {
+      "type": "string",
+      "description": "Platform role of the user (admin/user)",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "account_type": {
+      "type": "string",
+      "description": "Business account type / active context",
+      "enum": [
+        "ROLE_CLIENT",
+        "ROLE_FREELANCER",
+        "ROLE_VERIFIED_FREELANCER",
+        "ROLE_ADMIN",
+        "ROLE_MODERATOR",
+        "ROLE_SUPPORT"
+      ]
+    },
+    "avatar_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Profile photo URL"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Editable display name shown across the app (overrides built-in full_name when set)"
+    },
+    "username": {
+      "type": "string",
+      "description": "Unique public handle (lowercase, letters/numbers/_)"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary language"
+    },
+    "timezone": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "name": "User",
+  "type": "object"
+}

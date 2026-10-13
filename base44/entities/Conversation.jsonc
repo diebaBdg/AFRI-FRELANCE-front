@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "participant_a_id": {
+      "type": "string"
+    },
+    "participant_a_name": {
+      "type": "string"
+    },
+    "participant_b_id": {
+      "type": "string"
+    },
+    "participant_b_name": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "project_title": {
+      "type": "string"
+    },
+    "last_message": {
+      "type": "string"
+    },
+    "last_time": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "participant_a_id",
+    "participant_b_id"
+  ],
+  "name": "Conversation",
+  "type": "object"
+}

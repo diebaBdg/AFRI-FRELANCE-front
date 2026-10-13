@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "project_title": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Owner of the project (creates the contract)"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "freelancer_id": {
+      "type": "string",
+      "description": "Author of the accepted proposal"
+    },
+    "freelancer_name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "delay_days": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed",
+        "disputed",
+        "cancelled"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "project_id",
+    "client_name",
+    "freelancer_name"
+  ],
+  "name": "Contract",
+  "type": "object"
+}

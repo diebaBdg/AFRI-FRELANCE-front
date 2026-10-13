@@ -1,0 +1,52 @@
+{
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdraw",
+        "escrow_in",
+        "escrow_out",
+        "earning",
+        "refund",
+        "fee"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "description": "Always positive; sign inferred from type"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "default": "completed"
+    },
+    "description": {
+      "type": "string"
+    },
+    "contract_id": {
+      "type": "string"
+    },
+    "balance_after": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "amount"
+  ],
+  "name": "WalletTransaction",
+  "type": "object"
+}
