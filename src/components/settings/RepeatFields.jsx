@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
-import { Plus, Trash2, Loader2, Upload } from "lucide-react";
+import { Plus, Trash2, Upload } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { arr } from "@/lib/profiles";
 

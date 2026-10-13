@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { Wallet as WalletIcon, ArrowDownLeft, ArrowUpRight, Smartphone, Loader2, Plus, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Wallet as WalletIcon, ArrowDownLeft, ArrowUpRight, Smartphone, Loader2, Plus } from "lucide-react";
 import { money } from "@/lib/profiles";
 
 const POSITIVE = ["deposit", "earning", "refund", "escrow_out"];
@@ -33,7 +33,7 @@ export default function Wallet() {
     setTxns(Array.isArray(list) ? list : []);
     setLoading(false);
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user?.id]);
+  useEffect(() => { load();   }, [user?.id]);
 
   const balance = txns.reduce((s, t) => s + (POSITIVE.includes(t.type) ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
   const pending = txns.filter((t) => t.status === "pending").reduce((s, t) => s + (POSITIVE.includes(t.type) ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);

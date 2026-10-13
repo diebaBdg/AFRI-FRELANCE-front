@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, CheckCircle2, ShieldCheck, ShieldAlert, Eye } from "lucide-react";
+import { Loader2, Save, CheckCircle2, ShieldCheck, ShieldAlert } from "lucide-react";
 import ChipInput from "@/components/settings/ChipInput";
 import RepeatFields from "@/components/settings/RepeatFields";
 import { ensureFreelancerProfile, SKILL_SUGGESTIONS, SKILL_LEVELS, LANG_LEVELS, LANGUAGES, CURRENCIES, AVAILABILITY_STATUS, COMMITMENTS, WORK_TYPES, PROJECT_TYPES, COUNTRIES, computeCompletion } from "@/lib/profiles";
@@ -29,7 +29,7 @@ export default function FreelancerEditor() {
       setProfile(p);
       setLoading(false);
     })();
-    // eslint-disable-next-line
+     
   }, [user?.id]);
 
   if (loading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement de votre profil freelance…</div>;

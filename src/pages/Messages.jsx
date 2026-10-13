@@ -55,7 +55,7 @@ export default function Messages() {
       }
     })();
     return () => { alive = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [user?.id]);
 
   const conversations = real;
@@ -69,7 +69,7 @@ export default function Messages() {
       if (alive) setThread(msgs);
     })();
     return () => { alive = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [activeId]);
 
   const send = async () => {

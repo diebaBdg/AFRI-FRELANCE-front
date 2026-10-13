@@ -40,7 +40,7 @@ export default function UserProfiles() {
     }
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user?.id]);
+  useEffect(() => { load();   }, [user?.id]);
 
   const setActive = async (type) => {
     try {

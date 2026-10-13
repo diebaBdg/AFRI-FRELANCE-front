@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, CheckCircle2, MessageSquare, FileText, Briefcase, Star, TrendingUp, Award, Globe, Clock, Loader2 } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MapPin, CheckCircle2, MessageSquare, FileText, Briefcase, TrendingUp, Award, Globe, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import Rating from "@/components/Rating";
 import { Image } from "@/components/ui/image";
 import { VerifiedBadge, TopFreelancerBadge } from "@/components/VerifiedBadges";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { fetchFreelancer } from "@/lib/freelancerView";
-import { flagFor } from "@/lib/mockData";
 import { money } from "@/lib/profiles";
 import AuthGateModal from "@/components/AuthGateModal";
 

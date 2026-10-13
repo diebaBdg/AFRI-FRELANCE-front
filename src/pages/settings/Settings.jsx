@@ -3,8 +3,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Image } from "@/components/ui/image";
 import { Badge } from "@/components/ui/badge";
 import { roleLabel } from "@/lib/roles";
-import { ShieldCheck, User, Briefcase, Building2, Lock, Bell, Sliders, FolderKanban, FileText, Wallet as WalletIcon, MessageSquare, Star } from "lucide-react";
-import { computeCompletion } from "@/lib/profiles";
+import { ShieldCheck, User, Briefcase, Building2, Lock, Bell, Sliders, FolderKanban, FileText, Wallet as WalletIcon, MessageSquare } from "lucide-react";
 
 const accountNav = [
   { label: "Profil", to: "/settings/profile", icon: User },

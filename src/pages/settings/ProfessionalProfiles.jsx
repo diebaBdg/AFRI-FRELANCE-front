@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Briefcase, Building2, CheckCircle2, Pencil, Plus, Power, ShieldCheck } from "lucide-react";
+import { Loader2, Briefcase, Building2, CheckCircle2, Pencil, Plus, Power } from "lucide-react";
 import { getMyProfiles, ensureFreelancerProfile, ensureClientProfile, computeCompletion, completionChecks, AVAILABILITY_STATUS, COMMITMENTS } from "@/lib/profiles";
 
 export default function ProfessionalProfiles() {
@@ -23,7 +23,7 @@ export default function ProfessionalProfiles() {
     const { freelancer, client } = await getMyProfiles(user.id);
     setFreelance(freelancer); setClient(client); setLoading(false);
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user?.id]);
+  useEffect(() => { load();   }, [user?.id]);
 
   const activate = async (type) => {
     setBusy(true);

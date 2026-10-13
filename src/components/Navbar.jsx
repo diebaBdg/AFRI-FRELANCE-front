@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, Bell, Search, ChevronDown, LayoutDashboard, Briefcase, FolderKanban, MessageSquare, FileText, Wallet, Users, Globe } from "lucide-react";
+import { Menu, X, Bell, Search, LayoutDashboard, Briefcase, FolderKanban, MessageSquare, FileText, Wallet, Users, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/AuthContext";
 import { Image } from "@/components/ui/image";
 import { roleLabel } from "@/lib/roles";

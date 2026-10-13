@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, ShieldAlert, KeyRound, MonitorSmartphone } from "lucide-react";
+import { ShieldCheck, ShieldAlert, MonitorSmartphone } from "lucide-react";
 
 export default function SecurityPage() {
   const sessions = [

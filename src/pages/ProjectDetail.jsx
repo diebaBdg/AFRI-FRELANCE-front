@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { MapPin, Clock, Users, FileText, CheckCircle2, Paperclip, Send, Sparkles, Loader2 } from "lucide-react";
+import { MapPin, Clock, Users, CheckCircle2, Paperclip, Send, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
