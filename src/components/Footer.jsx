@@ -16,7 +16,7 @@ export default function Footer() {
           <div className="md:col-span-1">
             <div className="inline-flex rounded-xl bg-white px-3 py-2">
               <img
-                src="https://media.base44.com/images/public/6a8833277a67a9086f551c95/cbf3a21e4_AfriFreelance-logo-primaire-horizontal-clair.svg"
+                src="https://media.api.com/images/public/6a8833277a67a9086f551c95/cbf3a21e4_AfriFreelance-logo-primaire-horizontal-clair.svg"
                 alt="AfriFreelance"
                 className="h-8 w-auto"
               />

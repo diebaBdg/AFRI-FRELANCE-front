@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { fetchFreelancers } from "@/lib/freelancerView";
 import Hero from "@/components/landing/Hero";
 import SocialProof from "@/components/landing/SocialProof";
@@ -26,7 +26,7 @@ export default function Landing() {
     (async () => {
       const [fls, prs] = await Promise.all([
         fetchFreelancers({ limit: 4, sort: "-updated_date" }).catch(() => []),
-        base44.entities.Project.filter({ status: "published" }, "-created_date", 6).catch(() => []),
+        api.entities.Project.filter({ status: "published" }, "-created_date", 6).catch(() => []),
       ]);
       if (!alive) return;
       setTop(fls);

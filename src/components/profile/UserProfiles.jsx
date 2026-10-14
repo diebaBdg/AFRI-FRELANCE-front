@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,8 @@ export default function UserProfiles() {
     setLoading(true);
     try {
       const [f, c] = await Promise.all([
-        base44.entities.FreelancerProfile.filter({ created_by_id: user.id }).catch(() => []),
-        base44.entities.ClientProfile.filter({ created_by_id: user.id }).catch(() => []),
+        api.entities.FreelancerProfile.filter({ created_by_id: user.id }).catch(() => []),
+        api.entities.ClientProfile.filter({ created_by_id: user.id }).catch(() => []),
       ]);
       setFreelance(Array.isArray(f) ? f[0] : null);
       setClient(Array.isArray(c) ? c[0] : null);
@@ -44,7 +44,7 @@ export default function UserProfiles() {
 
   const setActive = async (type) => {
     try {
-      await base44.auth.updateMe({ account_type: type });
+      await api.auth.updateMe({ account_type: type });
       await checkUserAuth();
     } catch { /* ignore */ }
   };
@@ -138,8 +138,8 @@ function FreelanceForm({ initial, onSaved, onCancel }) {
         portfolio_url: portfolioUrl.trim() || null,
       };
       const result = initial?.id
-        ? await base44.entities.FreelancerProfile.update(initial.id, data)
-        : await base44.entities.FreelancerProfile.create(data);
+        ? await api.entities.FreelancerProfile.update(initial.id, data)
+        : await api.entities.FreelancerProfile.create(data);
       onSaved(result);
     } catch (err) {
       setError(err.message || "Échec de l'enregistrement");
@@ -249,8 +249,8 @@ function ClientForm({ initial, onSaved, onCancel }) {
         website: website.trim() || null,
       };
       const result = initial?.id
-        ? await base44.entities.ClientProfile.update(initial.id, data)
-        : await base44.entities.ClientProfile.create(data);
+        ? await api.entities.ClientProfile.update(initial.id, data)
+        : await api.entities.ClientProfile.create(data);
       onSaved(result);
     } catch (err) {
       setError(err.message || "Échec de l'enregistrement");

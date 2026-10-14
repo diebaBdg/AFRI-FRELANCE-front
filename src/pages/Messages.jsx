@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, Send, Paperclip, Phone, Video, Loader2, MessageSquare } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext";
@@ -98,7 +98,7 @@ export default function Messages() {
     try {
       const uploaded = [];
       for (const f of files) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: f });
+        const { file_url } = await api.integrations.Core.UploadFile({ file: f });
         uploaded.push({ name: f.name, url: file_url, size: f.size });
       }
       setAttachments((p) => [...p, ...uploaded]);

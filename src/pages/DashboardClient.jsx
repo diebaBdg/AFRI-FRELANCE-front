@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import FreelancerCard from "@/components/FreelancerCard";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { formatMoney } from "@/lib/mockData";
 import { getMyProfiles } from "@/lib/profiles";
@@ -30,11 +30,11 @@ export default function DashboardClient() {
     (async () => {
       if (!user) { setLoading(false); return; }
       const [projects, prf, fls] = await Promise.all([
-        base44.entities.Project.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
+        api.entities.Project.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
         getMyProfiles(user.id),
         fetchFreelancers({ limit: 8 }),
       ]);
-      const txns = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);
+      const txns = await api.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);
       const spend = (txns || []).filter((t) => t.type === "withdraw" || t.type === "escrow_in").reduce((s, t) => s + Number(t.amount || 0), 0);
       const now = new Date();
       const buckets = {};
@@ -44,7 +44,7 @@ export default function DashboardClient() {
       // proposals on my projects
       let allProps = [];
       for (const p of projects || []) {
-        const lp = await base44.entities.Proposal.filter({ project_id: p.id }, "-created_date", 20).catch(() => []);
+        const lp = await api.entities.Proposal.filter({ project_id: p.id }, "-created_date", 20).catch(() => []);
         allProps = allProps.concat((lp || []).map((x) => ({ ...x, projectTitle: p.title })));
       }
       if (!alive) return;

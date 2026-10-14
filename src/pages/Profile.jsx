@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,8 +35,8 @@ export default function Profile() {
     setUploading(true);
     setError("");
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      await base44.auth.updateMe({ avatar_url: file_url });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      await api.auth.updateMe({ avatar_url: file_url });
       setAvatarUrl(file_url);
       await checkUserAuth();
     } catch (err) {
@@ -51,7 +51,7 @@ export default function Profile() {
     setError("");
     setSavedAt(false);
     try {
-      await base44.auth.updateMe({ account_type: accountType });
+      await api.auth.updateMe({ account_type: accountType });
       await checkUserAuth();
       setSavedAt(true);
       setTimeout(() => setSavedAt(false), 2500);

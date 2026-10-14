@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 const FLAGS = {
   Sénégal: "🇸🇳",
@@ -41,7 +41,7 @@ export const toProjectView = (rec) => ({
 
 export async function fetchPublishedProjects() {
   try {
-    const list = await base44.entities.Project.filter({ status: "published" }, "-created_date", 50);
+    const list = await api.entities.Project.filter({ status: "published" }, "-created_date", 50);
     return (Array.isArray(list) ? list : []).map(toProjectView);
   } catch {
     return [];
@@ -50,7 +50,7 @@ export async function fetchPublishedProjects() {
 
 export async function fetchProject(id) {
   try {
-    const rec = await base44.entities.Project.get(id);
+    const rec = await api.entities.Project.get(id);
     return rec ? toProjectView(rec) : null;
   } catch {
     return null;

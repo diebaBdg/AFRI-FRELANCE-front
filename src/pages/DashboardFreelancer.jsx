@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import ProjectCard from "@/components/ProjectCard";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { formatMoney } from "@/lib/mockData";
 import { getMyProfiles } from "@/lib/profiles";
@@ -33,12 +33,12 @@ export default function DashboardFreelancer() {
       if (!user) { setLoading(false); return; }
       const [ctr, prf, projs] = await Promise.all([
         fetchContractsForUser(user.id),
-        base44.entities.Proposal.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
+        api.entities.Proposal.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
         fetchPublishedProjects(),
         getMyProfiles(user.id),
       ]);
       const myContracts = (ctr || []).filter((c) => c.freelancerId === user.id);
-      const txns = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);
+      const txns = await api.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);
       const earnTxns = (txns || []).filter((t) => t.type === "earning");
       const totalEarn = earnTxns.reduce((s, t) => s + Number(t.amount || 0), 0);
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export default function ProfessionalProfiles() {
 
   const activate = async (type) => {
     setBusy(true);
-    try { await base44.auth.updateMe({ account_type: type }); await checkUserAuth(); } catch {} finally { setBusy(false); }
+    try { await api.auth.updateMe({ account_type: type }); await checkUserAuth(); } catch {} finally { setBusy(false); }
   };
 
   const startFreelance = async () => {

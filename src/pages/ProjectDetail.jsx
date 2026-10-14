@@ -14,7 +14,7 @@ import { formatMoney } from "@/lib/mockData";
 import { fetchProject } from "@/lib/projectView";
 import { fetchProposals } from "@/lib/proposalView";
 import { fetchFreelancers, matchFreelancersToProject } from "@/lib/freelancerView";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
 
@@ -61,7 +61,7 @@ export default function ProjectDetail() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      await base44.entities.Proposal.create({
+      await api.entities.Proposal.create({
         project_id: id,
         project_title: p.title,
         freelancer_name: user?.full_name || (user?.email ? user.email.split("@")[0] : "Freelance"),
@@ -124,9 +124,9 @@ export default function ProjectDetail() {
                       {pr.status === "pending" && (
                         <div className="mt-3 flex gap-2">
                           <Button size="sm" className="bg-brand hover:bg-brand-dark" onClick={async () => {
-                            await base44.entities.Proposal.update(pr.id, { status: "accepted" });
+                            await api.entities.Proposal.update(pr.id, { status: "accepted" });
                             try {
-                              await base44.entities.Contract.create({
+                              await api.entities.Contract.create({
                                 project_id: id,
                                 project_title: p.title,
                                 client_name: p.clientName,
@@ -140,7 +140,7 @@ export default function ProjectDetail() {
                             } catch { /* contract may already exist */ }
                             loadProposals();
                           }}>Accepter</Button>
-                          <Button size="sm" variant="outline" onClick={async () => { await base44.entities.Proposal.update(pr.id, { status: "rejected" }); loadProposals(); }}>Refuser</Button>
+                          <Button size="sm" variant="outline" onClick={async () => { await api.entities.Proposal.update(pr.id, { status: "rejected" }); loadProposals(); }}>Refuser</Button>
                         </div>
                       )}
                     </div>

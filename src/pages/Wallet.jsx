@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function Wallet() {
   const load = async () => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
-    const list = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 100).catch(() => []);
+    const list = await api.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 100).catch(() => []);
     setTxns(Array.isArray(list) ? list : []);
     setLoading(false);
   };
@@ -47,7 +47,7 @@ export default function Wallet() {
     setSaving(true); setError("");
     try {
       const newBal = opType === "deposit" ? balance + amt : balance - amt;
-      await base44.entities.WalletTransaction.create({
+      await api.entities.WalletTransaction.create({
         user_id: user.id, type: opType, amount: amt, currency: "USD", status: "completed",
         description: `${TYPE_LABEL[opType]} via ${method}`, balance_after: newBal,
       });

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import FreelancerCard from "@/components/FreelancerCard";
 import { CATEGORIES, formatMoney } from "@/lib/mockData";
 import { fetchFreelancers, matchFreelancersToProject } from "@/lib/freelancerView";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 
 const steps = ["Titre", "Description", "Compétences", "Budget", "Deadline", "Publication"];
@@ -33,7 +33,7 @@ export default function PostProject() {
     setError("");
     setPublishing(true);
     try {
-      await base44.entities.Project.create({
+      await api.entities.Project.create({
         title: form.title,
         description: form.description,
         category: form.category,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ export default function ClientEditor() {
     setSaving(true);
     try {
       const { user_id, id, created_date, updated_date, created_by_id, ...data } = profile;
-      await base44.entities.ClientProfile.update(profile.id, data);
+      await api.entities.ClientProfile.update(profile.id, data);
       setSavedAt(true); setTimeout(() => setSavedAt(false), 2500);
     } catch (err) { setError(err.message || "Échec de l'enregistrement"); }
     finally { setSaving(false); }

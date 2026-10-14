@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { formatMoney, COMMISSION_RATE } from "@/lib/mockData";
 import { useAuth } from "@/lib/AuthContext";
 
@@ -28,12 +28,12 @@ export default function Admin() {
     (async () => {
       try {
         const [u, fl, pr, ct, co, tx] = await Promise.all([
-          base44.entities.User.list("-created_date", 200).catch(() => []),
-          base44.entities.FreelancerProfile.list("-created_date", 200).catch(() => []),
-          base44.entities.Project.list("-created_date", 200).catch(() => []),
-          base44.entities.Contract.list("-created_date", 200).catch(() => []),
-          base44.entities.Company.list("-created_date", 100).catch(() => []),
-          base44.entities.WalletTransaction.list("-created_date", 200).catch(() => []),
+          api.entities.User.list("-created_date", 200).catch(() => []),
+          api.entities.FreelancerProfile.list("-created_date", 200).catch(() => []),
+          api.entities.Project.list("-created_date", 200).catch(() => []),
+          api.entities.Contract.list("-created_date", 200).catch(() => []),
+          api.entities.Company.list("-created_date", 100).catch(() => []),
+          api.entities.WalletTransaction.list("-created_date", 200).catch(() => []),
         ]);
         // 6-month: new projects + revenue by month from contracts/wallet
         const now = new Date();

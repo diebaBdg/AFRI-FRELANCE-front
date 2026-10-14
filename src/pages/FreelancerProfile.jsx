@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Image } from "@/components/ui/image";
 import { VerifiedBadge, TopFreelancerBadge } from "@/components/VerifiedBadges";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { fetchFreelancer } from "@/lib/freelancerView";
 import { money } from "@/lib/profiles";
@@ -31,8 +31,8 @@ export default function FreelancerProfile() {
       setLoading(false);
       if (rec?.userId) {
         const [contracts, txns] = await Promise.all([
-          base44.entities.Contract.filter({ freelancer_id: rec.userId }, "-created_date", 200).catch(() => []),
-          base44.entities.WalletTransaction.filter({ user_id: rec.userId, type: "earning" }, "-created_date", 200).catch(() => []),
+          api.entities.Contract.filter({ freelancer_id: rec.userId }, "-created_date", 200).catch(() => []),
+          api.entities.WalletTransaction.filter({ user_id: rec.userId, type: "earning" }, "-created_date", 200).catch(() => []),
         ]);
         const cs = contracts || [];
         const revenue = (txns || []).reduce((s, t) => s + Number(t.amount || 0), 0);

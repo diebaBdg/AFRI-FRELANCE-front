@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 export const COUNTRIES = ["Sénégal", "Côte d'Ivoire", "Cameroun", "Bénin", "Maroc", "Nigeria", "France", "Belgique", "Canada", "Tunisie", "Algérie", "Burkina Faso", "Mali", "Guinée", "Togo", "Ghana", "Kenya", "Afrique du Sud", "Royaume-Uni", "États-Unis"];
 export const LANGUAGES = ["Français", "Anglais", "Wolof", "Arabe", "Espagnol", "Allemand", "Portugais", "Mandarin", "Coréen", "Swahili", "Yoruba", "Bambara", "Haoussa", "Peul"];
@@ -22,15 +22,15 @@ export const skillName = (s) => (s && typeof s === "object" ? s.name : s);
 export async function getMyProfiles(userId) {
   if (!userId) return { freelancer: null, client: null };
   const [f, c] = await Promise.all([
-    base44.entities.FreelancerProfile.filter({ user_id: userId }).catch(() => []),
-    base44.entities.ClientProfile.filter({ user_id: userId }).catch(() => []),
+    api.entities.FreelancerProfile.filter({ user_id: userId }).catch(() => []),
+    api.entities.ClientProfile.filter({ user_id: userId }).catch(() => []),
   ]);
   return { freelancer: (Array.isArray(f) ? f : [])[0] || null, client: (Array.isArray(c) ? c : [])[0] || null };
 }
 
 export async function getMyCompany(userId) {
   if (!userId) return null;
-  const list = await base44.entities.Company.filter({ owner_id: userId }).catch(() => []);
+  const list = await api.entities.Company.filter({ owner_id: userId }).catch(() => []);
   return (Array.isArray(list) ? list : [])[0] || null;
 }
 
@@ -47,13 +47,13 @@ const emptyFreelancer = {
 export async function ensureFreelancerProfile(user, avatar_url) {
   const { freelancer } = await getMyProfiles(user.id);
   if (freelancer) return freelancer;
-  return await base44.entities.FreelancerProfile.create({ ...emptyFreelancer, user_id: user.id, avatar_url: avatar_url || "" });
+  return await api.entities.FreelancerProfile.create({ ...emptyFreelancer, user_id: user.id, avatar_url: avatar_url || "" });
 }
 
 export async function ensureClientProfile(user) {
   const { client } = await getMyProfiles(user.id);
   if (client) return client;
-  return await base44.entities.ClientProfile.create({
+  return await api.entities.ClientProfile.create({
     user_id: user.id, display_name: user.full_name || (user.email ? user.email.split("@")[0] : "Mon profil"),
     kind: "individual", active: true,
   });

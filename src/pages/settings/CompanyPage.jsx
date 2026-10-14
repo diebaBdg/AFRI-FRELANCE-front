@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,13 +26,13 @@ export default function CompanyPage() {
 
   if (loading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement…</div>;
 
-  const ensure = async () => { setSaving(true); try { const c = await base44.entities.Company.create({ name: "Mon entreprise", owner_id: user.id, members: [{ name: user.full_name || user.email, email: user.email, role: "owner" }] }); setCompany(c); } finally { setSaving(false); } };
+  const ensure = async () => { setSaving(true); try { const c = await api.entities.Company.create({ name: "Mon entreprise", owner_id: user.id, members: [{ name: user.full_name || user.email, email: user.email, role: "owner" }] }); setCompany(c); } finally { setSaving(false); } };
   const set = (k, v) => setCompany((p) => ({ ...p, [k]: v }));
 
   const save = async () => {
     if (!company?.name?.trim()) { setError("Le nom de l'entreprise est obligatoire."); return; }
     setSaving(true); setError("");
-    try { await base44.entities.Company.update(company.id, company); setSavedAt(true); setTimeout(() => setSavedAt(false), 2500); }
+    try { await api.entities.Company.update(company.id, company); setSavedAt(true); setTimeout(() => setSavedAt(false), 2500); }
     catch (err) { setError(err.message || "Échec"); } finally { setSaving(false); }
   };
 
@@ -47,7 +47,7 @@ export default function CompanyPage() {
     const file = e.target.files?.[0]; e.target.value = "";
     if (!file) return;
     setSaving(true);
-    try { const { file_url } = await base44.integrations.Core.UploadFile({ file }); set("logo_url", file_url); } finally { setSaving(false); }
+    try { const { file_url } = await api.integrations.Core.UploadFile({ file }); set("logo_url", file_url); } finally { setSaving(false); }
   };
 
   if (!company) {

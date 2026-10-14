@@ -6,7 +6,7 @@ const FEATURES = [
   { title: "Matching intelligent", text: "Recommandations de missions et de talents en temps réel." },
 ];
 
-const LOGO_MARK = "https://media.base44.com/images/public/6a8833277a67a9086f551c95/6ce7aa187_AfriFreelance-icone-app.svg";
+const LOGO_MARK = "https://media.api.com/images/public/6a8833277a67a9086f551c95/6ce7aa187_AfriFreelance-icone-app.svg";
 
 export default function AuthSplitLayout({ tagline, title, subtitle, children, footer, accent = "brand" }) {
   const glow = accent === "gold" ? "bg-brand-gold/20" : "bg-brand/25";

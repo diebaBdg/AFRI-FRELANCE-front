@@ -6,7 +6,7 @@ import {
   User as UserIcon, Globe, LogOut, Users,
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Image } from "@/components/ui/image";
 import { roleLabel } from "@/lib/roles";
 
@@ -28,7 +28,7 @@ export default function ProfileMenu() {
   const go = (to) => { setOpen(false); navigate(to); };
   const handleLogout = async () => {
     setOpen(false);
-    await base44.auth.logout("/login");
+    await api.auth.logout("/login");
   };
   const name = user.display_name || user.full_name || (user.email ? user.email.split("@")[0] : "Mon compte");
 

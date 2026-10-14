@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Plus, Trash2, Upload } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { arr } from "@/lib/profiles";
 
 function Field({ row, field, onChange }) {
@@ -49,7 +49,7 @@ function Field({ row, field, onChange }) {
             <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
               const file = e.target.files?.[0]; e.target.value = "";
               if (!file) return;
-              try { const { file_url } = await base44.integrations.Core.UploadFile({ file }); set(file_url); } catch {}
+              try { const { file_url } = await api.integrations.Core.UploadFile({ file }); set(file_url); } catch {}
             }} />
           </label>
           {value && <button onClick={() => set("")} className="text-xs text-destructive hover:underline">Retirer</button>}

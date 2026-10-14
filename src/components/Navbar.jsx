@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Image } from "@/components/ui/image";
 import { roleLabel } from "@/lib/roles";
 import { User } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import ProfileMenu from "@/components/ProfileMenu";
 
 const publicLinks = [
@@ -38,7 +38,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
           <img
-            src="https://media.base44.com/images/public/6a8833277a67a9086f551c95/cbf3a21e4_AfriFreelance-logo-primaire-horizontal-clair.svg"
+            src="https://media.api.com/images/public/6a8833277a67a9086f551c95/cbf3a21e4_AfriFreelance-logo-primaire-horizontal-clair.svg"
             alt="AfriFreelance"
             className="h-9 w-auto"
           />
@@ -136,7 +136,7 @@ export default function Navbar() {
               <>
                 <Button className="flex-1 bg-brand hover:bg-brand-dark" onClick={() => { setOpen(false); navigate("/post-project"); }}>Publier un projet</Button>
                 <Button variant="outline" className="flex-1" onClick={() => { setOpen(false); navigate("/settings/profile"); }}>Mon profil</Button>
-                <Button variant="outline" className="flex-1" onClick={async () => { setOpen(false); await base44.auth.logout("/login"); }}>Déconnexion</Button>
+                <Button variant="outline" className="flex-1" onClick={async () => { setOpen(false); await api.auth.logout("/login"); }}>Déconnexion</Button>
               </>
             ) : (
               <>

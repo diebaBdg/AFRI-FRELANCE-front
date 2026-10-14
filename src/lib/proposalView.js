@@ -1,8 +1,8 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 export async function fetchProposals(projectId) {
   try {
-    const list = await base44.entities.Proposal.filter({ project_id: projectId }, "-created_date", 100);
+    const list = await api.entities.Proposal.filter({ project_id: projectId }, "-created_date", 100);
     return Array.isArray(list) ? list : [];
   } catch {
     return [];

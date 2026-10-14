@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 export const timeShort = (iso) => (iso ? new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
 
@@ -21,8 +21,8 @@ const toConvView = (rec, userId) => {
 export async function fetchConversationsForUser(userId) {
   if (!userId) return [];
   const [a, b] = await Promise.all([
-    base44.entities.Conversation.filter({ participant_a_id: userId }, "-updated_date", 50).catch(() => []),
-    base44.entities.Conversation.filter({ participant_b_id: userId }, "-updated_date", 50).catch(() => []),
+    api.entities.Conversation.filter({ participant_a_id: userId }, "-updated_date", 50).catch(() => []),
+    api.entities.Conversation.filter({ participant_b_id: userId }, "-updated_date", 50).catch(() => []),
   ]);
   const seen = new Set();
   const out = [];
@@ -34,7 +34,7 @@ export async function fetchConversationsForUser(userId) {
 
 export async function fetchMessages(convId, userId) {
   try {
-    const list = await base44.entities.Message.filter({ conversation_id: convId }, "created_date", 200);
+    const list = await api.entities.Message.filter({ conversation_id: convId }, "created_date", 200);
     return (Array.isArray(list) ? list : []).map((m) => ({
       id: m.id,
       from: m.sender_id === userId ? "me" : "them",
@@ -51,7 +51,7 @@ export async function ensureConversation({ me, meName, other, otherName, project
   const existing = await fetchConversationsForUser(me);
   const found = existing.find((c) => c.otherId === other);
   if (found) return found.id;
-  const rec = await base44.entities.Conversation.create({
+  const rec = await api.entities.Conversation.create({
     participant_a_id: me,
     participant_a_name: meName || "",
     participant_b_id: other,
@@ -64,14 +64,14 @@ export async function ensureConversation({ me, meName, other, otherName, project
 }
 
 export async function sendMessage({ conversation_id, sender_id, sender_name, text, files }) {
-  await base44.entities.Message.create({
+  await api.entities.Message.create({
     conversation_id,
     sender_id,
     sender_name: sender_name || "",
     body: text || "",
     attachments: files || [],
   });
-  await base44.entities.Conversation.update(conversation_id, {
+  await api.entities.Conversation.update(conversation_id, {
     last_message: text || "",
     last_time: new Date().toISOString(),
   });

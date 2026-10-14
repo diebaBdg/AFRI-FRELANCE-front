@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,7 +35,7 @@ export default function Register() {
     if (password !== confirmPassword) return setError("Les mots de passe ne correspondent pas.");
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
+      await api.auth.register({ email, password });
       setShowOtp(true);
     } catch (err) {
       setError(err.message || "Échec de l'inscription");
@@ -48,10 +48,10 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.access_token) base44.auth.setToken(result.access_token);
+      const result = await api.auth.verifyOtp({ email, otpCode });
+      if (result?.access_token) api.auth.setToken(result.access_token);
       // Persist the chosen account type on the user record (best-effort, non-blocking on failure)
-      try { await base44.auth.updateMe({ account_type: accountType }); } catch { /* ignore */ }
+      try { await api.auth.updateMe({ account_type: accountType }); } catch { /* ignore */ }
       window.location.href = safeReturnTo();
     } catch (err) {
       setError(err.message || "Code de vérification invalide");
@@ -63,14 +63,14 @@ export default function Register() {
   const handleResend = async () => {
     setError("");
     try {
-      await base44.auth.resendOtp(email);
+      await api.auth.resendOtp(email);
       toast({ title: "Code envoyé", description: "Vérifiez votre boîte mail." });
     } catch (err) {
       setError(err.message || "Impossible de renvoyer le code");
     }
   };
 
-  const handleGoogle = () => base44.auth.loginWithProvider("google", safeReturnTo());
+  const handleGoogle = () => api.auth.loginWithProvider("google", safeReturnTo());
 
   if (showOtp) {
     return (

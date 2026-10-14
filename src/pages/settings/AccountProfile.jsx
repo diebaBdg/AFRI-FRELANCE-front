@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,15 +55,15 @@ export default function AccountProfile() {
     if (!file) return;
     setUploading(true); setError("");
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      await base44.auth.updateMe({ avatar_url: file_url });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      await api.auth.updateMe({ avatar_url: file_url });
       setAvatarUrl(file_url);
       await checkUserAuth();
     } catch (err) { setError(err.message || "Échec de l'envoi"); }
     finally { setUploading(false); }
   };
   const removeAvatar = async () => {
-    try { await base44.auth.updateMe({ avatar_url: "" }); setAvatarUrl(""); await checkUserAuth(); } catch {}
+    try { await api.auth.updateMe({ avatar_url: "" }); setAvatarUrl(""); await checkUserAuth(); } catch {}
   };
 
   const save = async () => {
@@ -81,7 +81,7 @@ export default function AccountProfile() {
         language: form.language,
         timezone: form.timezone,
       };
-      await base44.auth.updateMe(payload);
+      await api.auth.updateMe(payload);
       await checkUserAuth();
       setSavedAt(true); setTimeout(() => setSavedAt(false), 2500);
     } catch (err) { setError(err.message || "Échec de l'enregistrement"); }

@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 // Derived, real notifications from the DB (proposals on my projects, wallet earnings, conversations)
 function when(iso) {
@@ -17,9 +17,9 @@ export async function fetchNotifications(userId) {
 
   // 1) Pending proposals on MY projects
   try {
-    const myProjects = await base44.entities.Project.filter({ created_by_id: userId }, "-created_date", 50).catch(() => []);
+    const myProjects = await api.entities.Project.filter({ created_by_id: userId }, "-created_date", 50).catch(() => []);
     for (const p of myProjects || []) {
-      const props = await base44.entities.Proposal.filter({ project_id: p.id, status: "pending" }, "-created_date", 20).catch(() => []);
+      const props = await api.entities.Proposal.filter({ project_id: p.id, status: "pending" }, "-created_date", 20).catch(() => []);
       for (const pr of props || []) {
         out.push({
           id: `prop-${pr.id}`,
@@ -36,7 +36,7 @@ export async function fetchNotifications(userId) {
 
   // 2) Recent wallet earnings
   try {
-    const txns = await base44.entities.WalletTransaction.filter({ user_id: userId, type: "earning" }, "-created_date", 5).catch(() => []);
+    const txns = await api.entities.WalletTransaction.filter({ user_id: userId, type: "earning" }, "-created_date", 5).catch(() => []);
     for (const t of txns || []) {
       out.push({
         id: `pay-${t.id}`,
@@ -53,8 +53,8 @@ export async function fetchNotifications(userId) {
   // 3) Recent conversations with last message
   try {
     const [a, b] = await Promise.all([
-      base44.entities.Conversation.filter({ participant_a_id: userId }, "-updated_date", 10).catch(() => []),
-      base44.entities.Conversation.filter({ participant_b_id: userId }, "-updated_date", 10).catch(() => []),
+      api.entities.Conversation.filter({ participant_a_id: userId }, "-updated_date", 10).catch(() => []),
+      api.entities.Conversation.filter({ participant_b_id: userId }, "-updated_date", 10).catch(() => []),
     ]);
     const seen = new Set();
     for (const c of [...(a || []), ...(b || [])]) {

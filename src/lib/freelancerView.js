@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 import { flagFor } from "@/lib/mockData";
 
 const LEVEL_NUM = { beginner: 2, intermediate: 3, advanced: 4, expert: 5 };
@@ -61,7 +61,7 @@ export const toFreelancerView = (rec) => ({
 
 export async function fetchFreelancers(opts = {}) {
   try {
-    const list = await base44.entities.FreelancerProfile.filter(
+    const list = await api.entities.FreelancerProfile.filter(
       opts.filter || {},
       opts.sort || "-updated_date",
       opts.limit || 50
@@ -76,7 +76,7 @@ export async function fetchFreelancers(opts = {}) {
 
 export async function fetchFreelancer(id) {
   try {
-    const rec = await base44.entities.FreelancerProfile.get(id);
+    const rec = await api.entities.FreelancerProfile.get(id);
     return rec ? toFreelancerView(rec) : null;
   } catch {
     return null;

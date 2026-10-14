@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/apiClient";
 
 const STATUS_LABEL = {
   active: "Active",
@@ -27,8 +27,8 @@ export async function fetchContractsForUser(userId) {
   if (!userId) return [];
   try {
     const [asClient, asFreelancer] = await Promise.all([
-      base44.entities.Contract.filter({ client_id: userId }, "-created_date", 100).catch(() => []),
-      base44.entities.Contract.filter({ freelancer_id: userId }, "-created_date", 100).catch(() => []),
+      api.entities.Contract.filter({ client_id: userId }, "-created_date", 100).catch(() => []),
+      api.entities.Contract.filter({ freelancer_id: userId }, "-created_date", 100).catch(() => []),
     ]);
     const seen = new Set();
     const out = [];
