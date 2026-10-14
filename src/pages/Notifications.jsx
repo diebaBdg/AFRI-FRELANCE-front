@@ -4,7 +4,7 @@ import { Bell, Briefcase, MessageSquare, DollarSign, Star, Loader2 } from "lucid
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext";
-import { fetchNotifications } from "@/lib/notificationsView";
+import { fetchNotifications, markAllNotificationsRead } from "@/lib/notificationsView";
 
 const iconMap = { proposal: Briefcase, message: MessageSquare, payment: DollarSign, match: Star, review: Star };
 
@@ -15,11 +15,14 @@ export default function Notifications() {
 
   useEffect(() => {
     let alive = true;
-    fetchNotifications(user?.id).then((r) => { if (alive) { setItems(r); setLoading(false); } });
+    fetchNotifications().then((r) => { if (alive) { setItems(r); setLoading(false); } });
     return () => { alive = false; };
   }, [user?.id]);
 
-  const markAll = () => setItems((p) => p.map((n) => ({ ...n, unread: false })));
+  const markAll = async () => {
+    await markAllNotificationsRead().catch(() => {});
+    setItems((p) => p.map((n) => ({ ...n, unread: false })));
+  };
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">

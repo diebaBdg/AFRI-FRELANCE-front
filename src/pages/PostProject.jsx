@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, ChevronRight, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import FreelancerCard from "@/components/FreelancerCard";
-import { CATEGORIES, formatMoney } from "@/lib/mockData";
+import { formatMoney } from "@/lib/mockData";
+import { fetchCategories } from "@/lib/categories";
 import { fetchFreelancers, matchFreelancersToProject } from "@/lib/freelancerView";
 import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
@@ -28,6 +29,17 @@ export default function PostProject() {
   const [error, setError] = useState("");
   const [matches, setMatches] = useState([]);
   const [loadingMatches, setLoadingMatches] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories().then((cats) => {
+      setCategories(cats);
+      setForm((f) => {
+        if (cats.some((c) => c.id === f.category)) return f;
+        return { ...f, category: cats[0]?.id || f.category };
+      });
+    });
+  }, []);
 
   const publish = async () => {
     setError("");
@@ -118,7 +130,7 @@ export default function PostProject() {
           <div>
             <Label>Catégories & compétences recherchées</Label>
             <select className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <div className="mt-3 flex gap-2">
               <Input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Ajouter une compétence (ex: React)" />
@@ -147,7 +159,7 @@ export default function PostProject() {
             <h3 className="font-semibold">Résumé de votre projet</h3>
             <div className="mt-4 space-y-2 rounded-xl bg-muted/40 p-4 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Titre</span><span className="font-medium">{form.title || "—"}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Catégorie</span><span>{CATEGORIES.find((c) => c.id === form.category)?.name}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Catégorie</span><span>{categories.find((c) => c.id === form.category)?.name || form.category}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Compétences</span><span>{form.skills.join(", ") || "—"}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Budget</span><span>{form.budgetType === "fixed" ? `${formatMoney(form.budgetMin)} – ${formatMoney(form.budgetMax)}` : `${formatMoney(form.budgetMin)}/mois`}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Deadline</span><span>{form.deadline}</span></div>

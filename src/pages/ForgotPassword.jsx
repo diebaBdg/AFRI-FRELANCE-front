@@ -10,40 +10,41 @@ import AuthLayout from "@/components/AuthLayout";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+    setMessage("");
     try {
       await api.auth.resetPasswordRequest(email);
-    } catch {
-      // Always show success regardless
+      setMessage("Si un compte existe, un e-mail de réinitialisation sera envoyé.");
+    } catch (err) {
+      setError(err.message || "La réinitialisation par e-mail n'est pas encore disponible.");
     } finally {
       setLoading(false);
-      setSent(true);
     }
   };
 
   return (
     <AuthLayout
       icon={Mail}
-      title="Reset password"
-      subtitle="We'll send you a link to reset it"
+      title="Mot de passe oublié"
+      subtitle="Connectez-vous puis changez-le dans Paramètres > Sécurité."
       footer={
         <Link to="/login" className="text-primary font-medium hover:underline">
-          <ArrowLeft className="w-3 h-3 inline mr-1" />Back to log in
+          <ArrowLeft className="w-3 h-3 inline mr-1" />Retour à la connexion
         </Link>
       }
     >
-      {sent ? (
-        <p className="text-sm text-foreground text-center">
-          If an account exists with that email, you'll receive a password reset link shortly.
-        </p>
-      ) : (
+      {error && <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+      {message && <p className="text-sm text-foreground text-center">{message}</p>}
+      {!message && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">Adresse e-mail</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
               <Input
@@ -51,7 +52,7 @@ export default function ForgotPassword() {
                 type="email"
                 autoComplete="email"
                 autoFocus
-                placeholder="you@example.com"
+                placeholder="vous@exemple.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 h-12"
@@ -63,10 +64,10 @@ export default function ForgotPassword() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Sending...
+                Envoi…
               </>
             ) : (
-              "Send reset link"
+              "Demander une réinitialisation"
             )}
           </Button>
         </form>

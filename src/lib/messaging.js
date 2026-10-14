@@ -3,16 +3,16 @@ import { api } from "@/api/apiClient";
 export const timeShort = (iso) => (iso ? new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
 
 const toConvView = (rec, userId) => {
-  const isA = rec.participant_a_id === userId;
+  const isA = String(rec.participant_a_id) === String(userId);
   return {
     id: rec.id,
     _real: true,
     otherId: isA ? rec.participant_b_id : rec.participant_a_id,
     clientName: (isA ? rec.participant_b_name : rec.participant_a_name) || "Interlocuteur",
-    clientAvatar: null,
+    clientAvatar: isA ? rec.user2AvatarUrl : rec.user1AvatarUrl,
     lastMessage: rec.last_message || "",
     time: rec.last_time ? timeShort(rec.last_time) : "",
-    unread: 0,
+    unread: rec.unread || 0,
     thread: [],
     projectTitle: rec.project_title || "",
   };
@@ -20,24 +20,16 @@ const toConvView = (rec, userId) => {
 
 export async function fetchConversationsForUser(userId) {
   if (!userId) return [];
-  const [a, b] = await Promise.all([
-    api.entities.Conversation.filter({ participant_a_id: userId }, "-updated_date", 50).catch(() => []),
-    api.entities.Conversation.filter({ participant_b_id: userId }, "-updated_date", 50).catch(() => []),
-  ]);
-  const seen = new Set();
-  const out = [];
-  for (const r of [...(a || []), ...(b || [])]) {
-    if (!seen.has(r.id)) { seen.add(r.id); out.push(toConvView(r, userId)); }
-  }
-  return out;
+  const list = await api.entities.Conversation.filter().catch(() => []);
+  return (list || []).map((r) => toConvView(r, userId));
 }
 
 export async function fetchMessages(convId, userId) {
   try {
-    const list = await api.entities.Message.filter({ conversation_id: convId }, "created_date", 200);
+    const list = await api.entities.Message.filter({ conversation_id: convId });
     return (Array.isArray(list) ? list : []).map((m) => ({
       id: m.id,
-      from: m.sender_id === userId ? "me" : "them",
+      from: String(m.sender_id) === String(userId) ? "me" : "them",
       text: m.body || "",
       files: Array.isArray(m.attachments) ? m.attachments : [],
       time: m.created_date ? timeShort(m.created_date) : "",
@@ -47,32 +39,21 @@ export async function fetchMessages(convId, userId) {
   }
 }
 
-export async function ensureConversation({ me, meName, other, otherName, projectTitle }) {
+export async function ensureConversation({ me, other, projectId }) {
   const existing = await fetchConversationsForUser(me);
-  const found = existing.find((c) => c.otherId === other);
+  const found = existing.find((c) => String(c.otherId) === String(other));
   if (found) return found.id;
   const rec = await api.entities.Conversation.create({
-    participant_a_id: me,
-    participant_a_name: meName || "",
-    participant_b_id: other,
-    participant_b_name: otherName || "",
-    project_title: projectTitle || "",
-    last_message: "",
-    last_time: new Date().toISOString(),
+    targetUserId: other,
+    projectId: projectId || null,
   });
   return rec.id;
 }
 
-export async function sendMessage({ conversation_id, sender_id, sender_name, text, files }) {
+export async function sendMessage({ conversation_id, text, files }) {
   await api.entities.Message.create({
     conversation_id,
-    sender_id,
-    sender_name: sender_name || "",
-    body: text || "",
+    content: text || "",
     attachments: files || [],
-  });
-  await api.entities.Conversation.update(conversation_id, {
-    last_message: text || "",
-    last_time: new Date().toISOString(),
   });
 }

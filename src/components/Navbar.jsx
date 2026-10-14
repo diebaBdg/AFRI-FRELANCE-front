@@ -38,7 +38,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
           <img
-            src="https://media.api.com/images/public/6a8833277a67a9086f551c95/cbf3a21e4_AfriFreelance-logo-primaire-horizontal-clair.svg"
+            src="/logo.svg"
             alt="AfriFreelance"
             className="h-9 w-auto"
           />

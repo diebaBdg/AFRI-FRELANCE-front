@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import AuthSplitLayout from "@/components/auth/AuthSplitLayout";
-import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 export default function Login() {
@@ -14,8 +13,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  // Post-login destination (e.g. the MCP OAuth consent page sends users here
-  // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
 
   const handleSubmit = async (e) => {
@@ -32,10 +29,6 @@ export default function Login() {
     }
   };
 
-  const handleGoogle = () => {
-    api.auth.loginWithProvider("google", returnTo);
-  };
-
   return (
     <AuthSplitLayout
       tagline="Bon retour"
@@ -43,15 +36,6 @@ export default function Login() {
       subtitle="Accédez à votre espace AfriFreelance."
       footer={<>Pas encore de compte ? <Link to={"/register" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "")} className="font-medium text-primary hover:underline">Créer un compte</Link></>}
     >
-      <Button variant="outline" className="mb-6 h-12 w-full text-sm font-medium" onClick={handleGoogle}>
-        <GoogleIcon className="mr-2 h-5 w-5" /> Continuer avec Google
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-        <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-muted-foreground">ou</span></div>
-      </div>
-
       {error && <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-4">

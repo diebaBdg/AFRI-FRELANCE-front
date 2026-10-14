@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import ProjectCard from "@/components/ProjectCard";
-import { CATEGORIES } from "@/lib/mockData";
+import { fetchCategories } from "@/lib/categories";
 import { fetchPublishedProjects } from "@/lib/projectView";
 
 export default function Projects() {
@@ -14,14 +14,19 @@ export default function Projects() {
   const [cat, setCat] = useState("all");
   const [sort, setSort] = useState("relevance");
   const [real, setReal] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { setQuery(params.get("q") || ""); }, [params]);
 
   useEffect(() => {
     let alive = true;
-    fetchPublishedProjects().then((r) => {
-      if (alive) { setReal(r); setLoading(false); }
+    Promise.all([fetchPublishedProjects(), fetchCategories()]).then(([r, cats]) => {
+      if (alive) {
+        setReal(r);
+        setCategories(cats);
+        setLoading(false);
+      }
     });
     return () => { alive = false; };
   }, []);
@@ -54,7 +59,7 @@ export default function Projects() {
         </div>
         <Select value={cat} onValueChange={setCat}>
           <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
-          <SelectContent><SelectItem value="all">Toutes catégories</SelectItem>{CATEGORIES.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+          <SelectContent><SelectItem value="all">Toutes catégories</SelectItem>{categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
         </Select>
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>

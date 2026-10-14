@@ -1,0 +1,16 @@
+{
+  "name": "AfriFreelance",
+  "short_name": "AfriFreelance",
+  "description": "Marketplace freelance pour les talents africains",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

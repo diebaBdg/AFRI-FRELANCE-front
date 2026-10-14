@@ -1,10 +1,25 @@
-import { request, getToken, setToken, clearToken, API_BASE_URL } from "./client";
+import { request, getToken, setToken, clearToken, isAbsent } from "./client";
+import { normalizeUser, toActiveMode, toPersonalInfoRequest } from "./normalize";
+
+function persistToken(data) {
+  const token = data?.token || data?.accessToken || data?.access_token;
+  if (token) setToken(token);
+  return token;
+}
+
+async function loadCurrentUser(loginPayload = {}) {
+  const [info, summary] = await Promise.all([
+    request("/api/profile/personal-info"),
+    request("/api/profile/summary").catch(() => ({})),
+  ]);
+  return normalizeUser(info || {}, summary || {}, loginPayload);
+}
 
 async function me() {
   const token = getToken();
   if (!token) return null;
   try {
-    return await request("/users/me");
+    return await loadCurrentUser();
   } catch (err) {
     if (err.status === 401 || err.status === 403) {
       clearToken();
@@ -17,66 +32,107 @@ async function me() {
 async function loginViaEmailPassword(email, password) {
   const data = await request("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ login: email, password }),
   });
-  if (data?.token || data?.accessToken) {
-    setToken(data.token || data.accessToken);
+  persistToken(data);
+  try {
+    return await loadCurrentUser(data || {});
+  } catch {
+    return normalizeUser({}, {}, data || {});
   }
-  return data;
 }
 
-async function register({ email, password }) {
-  const data = await request("/auth/register", {
+async function register({ email, password, confirmPassword, nom, prenom, phone }) {
+  return request("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({
+      email,
+      password,
+      confirmPassword: confirmPassword || password,
+      nom,
+      prenom,
+      phone,
+    }),
   });
-  return data;
 }
 
-async function verifyOtp({ email, otpCode }) {
-  const data = await request("/auth/verify-otp", {
-    method: "POST",
-    body: JSON.stringify({ email, otp: otpCode }),
-  });
-  if (data?.token || data?.accessToken) {
-    setToken(data.token || data.accessToken);
+async function ensureModeProfile(mode, payload = {}) {
+  if (mode === "FREELANCE") {
+    try {
+      await request("/api/profile/freelance");
+    } catch (err) {
+      if (!isAbsent(err)) throw err;
+      await request("/api/profile/freelance", {
+        method: "POST",
+        body: JSON.stringify({
+          title: payload.headline || payload.title || "Freelance",
+          overview: payload.bio || payload.overview || "",
+          country: payload.country,
+          city: payload.city,
+          currency: payload.defaultCurrency || payload.currency || "XOF",
+          profileActive: true,
+        }),
+      });
+    }
+    return;
   }
-  return data;
-}
 
-async function resendOtp(email) {
-  return request("/auth/resend-otp", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-}
-
-async function resetPasswordRequest(email) {
-  return request("/auth/forgot-password", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-}
-
-async function resetPassword({ resetToken, newPassword }) {
-  return request("/auth/reset-password", {
-    method: "POST",
-    body: JSON.stringify({ token: resetToken, newPassword }),
-  });
+  try {
+    await request("/api/profile/client");
+  } catch (err) {
+    if (!isAbsent(err)) throw err;
+    await request("/api/profile/client", {
+      method: "POST",
+      body: JSON.stringify({
+        displayName: payload.fullName || payload.full_name || payload.display_name || "Client",
+        clientType: payload.clientType || "INDIVIDUAL",
+        overview: payload.bio || "",
+        country: payload.country,
+        city: payload.city,
+        profileActive: true,
+      }),
+    });
+  }
 }
 
 async function updateMe(payload) {
-  return request("/users/me", {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  });
+  if (payload?.account_type) {
+    const mode = toActiveMode(payload.account_type);
+    await ensureModeProfile(mode, payload);
+    await request("/api/profile/active-mode", {
+      method: "PUT",
+      body: JSON.stringify({ mode }),
+    });
+  }
+
+  if (payload?.avatar_url !== undefined || payload?.avatarUrl !== undefined) {
+    const avatarUrl = payload.avatarUrl ?? payload.avatar_url;
+    if (avatarUrl) {
+      await request("/api/profile/avatar", {
+        method: "PUT",
+        body: JSON.stringify({ avatarUrl }),
+      });
+    } else {
+      await request("/api/profile/avatar", { method: "DELETE" });
+    }
+  }
+
+  const personalKeys = ["fullName", "full_name", "display_name", "username", "headline", "bio", "country", "city", "timezone", "language", "primaryLanguage", "defaultCurrency"];
+  const hasPersonal = personalKeys.some((k) => payload?.[k] !== undefined);
+  if (hasPersonal) {
+    const current = await request("/api/profile/personal-info");
+    await request("/api/profile/personal-info", {
+      method: "PUT",
+      body: JSON.stringify(toPersonalInfoRequest(current, payload)),
+    });
+  }
+
+  return me();
 }
 
 function logout(redirectUrl) {
   clearToken();
-  if (redirectUrl) {
-    window.location.href = redirectUrl;
-  }
+  if (redirectUrl) window.location.href = redirectUrl;
 }
 
 function redirectToLogin(returnTo) {
@@ -85,22 +141,30 @@ function redirectToLogin(returnTo) {
   window.location.href = `${loginPath}${param}`;
 }
 
-function loginWithProvider(provider, returnTo) {
-  const redirectUri = `${window.location.origin}/login`;
-  window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}?redirect_uri=${encodeURIComponent(redirectUri)}`;
+async function changePassword({ oldPassword, newPassword }) {
+  return request("/api/profile/security/password", {
+    method: "PUT",
+    body: JSON.stringify({ oldPassword, newPassword }),
+  });
+}
+
+async function resetPasswordRequest() {
+  throw new Error("La réinitialisation par e-mail n'est pas encore disponible. Connectez-vous puis changez le mot de passe dans Paramètres > Sécurité.");
+}
+
+async function resetPassword() {
+  throw new Error("La réinitialisation par e-mail n'est pas encore disponible. Connectez-vous puis changez le mot de passe dans Paramètres > Sécurité.");
 }
 
 export const auth = {
   me,
   loginViaEmailPassword,
   register,
-  verifyOtp,
-  resendOtp,
-  resetPasswordRequest,
-  resetPassword,
   updateMe,
   logout,
   redirectToLogin,
-  loginWithProvider,
+  changePassword,
+  resetPasswordRequest,
+  resetPassword,
   setToken,
 };

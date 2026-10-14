@@ -31,11 +31,11 @@ export default function DashboardFreelancer() {
     let alive = true;
     (async () => {
       if (!user) { setLoading(false); return; }
-      const [ctr, prf, projs] = await Promise.all([
+      const [ctr, proposalList, projs, profiles] = await Promise.all([
         fetchContractsForUser(user.id),
         api.entities.Proposal.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
         fetchPublishedProjects(),
-        getMyProfiles(user.id),
+        getMyProfiles(),
       ]);
       const myContracts = (ctr || []).filter((c) => c.freelancerId === user.id);
       const txns = await api.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);
@@ -56,10 +56,10 @@ export default function DashboardFreelancer() {
       }
       if (!alive) return;
       setContracts(myContracts);
-      setProposals(proposals || []);
+      setProposals(proposalList || []);
       setEarnings(totalEarn);
       setTxnByMonth(Object.values(buckets));
-      setProfile(prf.freelancer || null);
+      setProfile(profiles?.freelancer || null);
       setProjects(projs || []);
       setLoading(false);
     })();

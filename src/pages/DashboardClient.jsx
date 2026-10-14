@@ -31,7 +31,7 @@ export default function DashboardClient() {
       if (!user) { setLoading(false); return; }
       const [projects, prf, fls] = await Promise.all([
         api.entities.Project.filter({ created_by_id: user.id }, "-created_date", 50).catch(() => []),
-        getMyProfiles(user.id),
+        getMyProfiles(),
         fetchFreelancers({ limit: 8 }),
       ]);
       const txns = await api.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 200).catch(() => []);

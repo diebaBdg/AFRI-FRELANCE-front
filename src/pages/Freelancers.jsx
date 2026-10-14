@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import FreelancerCard from "@/components/FreelancerCard";
-import { CATEGORIES, COUNTRIES } from "@/lib/mockData";
+import { COUNTRIES } from "@/lib/mockData";
+import { fetchCategories } from "@/lib/categories";
 import { fetchFreelancers } from "@/lib/freelancerView";
 
 const sortOptions = [
@@ -29,6 +30,7 @@ export default function Freelancers() {
   const [sort, setSort] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
   const [all, setAll] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +40,13 @@ export default function Freelancers() {
 
   useEffect(() => {
     let alive = true;
-    fetchFreelancers({ limit: 100 }).then((r) => { if (alive) { setAll(r); setLoading(false); } });
+    Promise.all([fetchFreelancers({ limit: 100 }), fetchCategories()]).then(([r, cats]) => {
+      if (alive) {
+        setAll(r);
+        setCategories(cats);
+        setLoading(false);
+      }
+    });
     return () => { alive = false; };
   }, []);
 
@@ -91,7 +99,7 @@ export default function Freelancers() {
                 <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes</SelectItem>
-                  {CATEGORIES.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

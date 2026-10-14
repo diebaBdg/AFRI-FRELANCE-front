@@ -19,19 +19,17 @@ export const COMPANY_ROLES = [{ value: "owner", label: "Owner" }, { value: "admi
 export const arr = (x) => (Array.isArray(x) ? x : []);
 export const skillName = (s) => (s && typeof s === "object" ? s.name : s);
 
-export async function getMyProfiles(userId) {
-  if (!userId) return { freelancer: null, client: null };
+export async function getMyProfiles() {
   const [f, c] = await Promise.all([
-    api.entities.FreelancerProfile.filter({ user_id: userId }).catch(() => []),
-    api.entities.ClientProfile.filter({ user_id: userId }).catch(() => []),
+    api.entities.FreelancerProfile.me().catch(() => null),
+    api.entities.ClientProfile.get().catch(() => null),
   ]);
-  return { freelancer: (Array.isArray(f) ? f : [])[0] || null, client: (Array.isArray(c) ? c : [])[0] || null };
+  return { freelancer: f || null, client: c || null };
 }
 
-export async function getMyCompany(userId) {
-  if (!userId) return null;
-  const list = await api.entities.Company.filter({ owner_id: userId }).catch(() => []);
-  return (Array.isArray(list) ? list : [])[0] || null;
+export async function getMyCompany() {
+  const rec = await api.entities.Company.get().catch(() => null);
+  return rec || null;
 }
 
 const emptyFreelancer = {
@@ -45,13 +43,13 @@ const emptyFreelancer = {
 };
 
 export async function ensureFreelancerProfile(user, avatar_url) {
-  const { freelancer } = await getMyProfiles(user.id);
+  const { freelancer } = await getMyProfiles();
   if (freelancer) return freelancer;
   return await api.entities.FreelancerProfile.create({ ...emptyFreelancer, user_id: user.id, avatar_url: avatar_url || "" });
 }
 
 export async function ensureClientProfile(user) {
-  const { client } = await getMyProfiles(user.id);
+  const { client } = await getMyProfiles();
   if (client) return client;
   return await api.entities.ClientProfile.create({
     user_id: user.id, display_name: user.full_name || (user.email ? user.email.split("@")[0] : "Mon profil"),

@@ -17,15 +17,14 @@ Ouvrez l'URL locale affichée par Vite.
 
 ## Configuration
 
-Le frontend communique avec le backend Spring Boot via `/api/v1` (proxy Vite vers `http://localhost:8082`).
+Le frontend communique avec le backend Spring Boot via `/api/v1`.
+En développement, Vite proxifie `/api` vers `http://localhost:8082` (port du backend, `SERVER_PORT`).
 
-Variables d'environnement (`.env.local`) :
+Laissez `VITE_API_BASE_URL` vide (défaut `/api/v1`) pour passer par le proxy. Pour appeler le backend directement :
 
 ```
 VITE_API_BASE_URL=http://localhost:8082/api/v1
 ```
-
-Par défaut, le proxy Vite redirige `/api` vers `http://localhost:8082`.
 
 ## Scripts
 
@@ -36,4 +35,4 @@ Par défaut, le proxy Vite redirige `/api` vers `http://localhost:8082`.
 
 ## Docs & Support
 
-Documentation API (Swagger) : disponible sur le backend Spring Boot à `/api/v1/swagger-ui.html`
+Documentation API (Swagger) : `http://localhost:8082/api/v1/swagger-ui.html`

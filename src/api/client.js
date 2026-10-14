@@ -22,6 +22,30 @@ function buildHeaders(extra = {}) {
   return headers;
 }
 
+function parseErrorPayload(raw, status) {
+  if (!raw) return { message: `Request failed (${status})`, data: null };
+  try {
+    const data = JSON.parse(raw);
+    if (typeof data === "string") return { message: data, data };
+    const message =
+      data.message ||
+      data.error ||
+      data.detail ||
+      Object.values(data).find((v) => typeof v === "string") ||
+      `Request failed (${status})`;
+    return { message: String(message), data };
+  } catch {
+    return { message: raw.slice(0, 280) || `Request failed (${status})`, data: raw };
+  }
+}
+
+export function isAbsent(err) {
+  if (!err) return false;
+  if (err.status === 404) return true;
+  const code = err.data?.details?.code || err.data?.code;
+  return ["NO_COMPANY", "NO_FREELANCE_PROFILE", "NO_CLIENT_PROFILE"].includes(code);
+}
+
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;
   const res = await fetch(url, {
@@ -29,25 +53,17 @@ async function request(path, options = {}) {
     headers: buildHeaders(options.headers),
   });
 
+  const text = await res.text();
+
   if (!res.ok) {
-    let message = `Request failed (${res.status})`;
-    let status = res.status;
-    let data = null;
-    try {
-      data = await res.json();
-      message = data.message || data.error || data.detail || message;
-    } catch {
-      // response has no JSON body
-    }
+    const { message, data } = parseErrorPayload(text, res.status);
     const error = new Error(message);
-    error.status = status;
+    error.status = res.status;
     error.data = data;
     throw error;
   }
 
-  if (res.status === 204) return null;
-  const text = await res.text();
-  if (!text) return null;
+  if (res.status === 204 || !text) return null;
   return JSON.parse(text);
 }
 
@@ -61,34 +77,23 @@ async function uploadRequest(path, formData) {
     headers,
     body: formData,
   });
+  const text = await res.text();
   if (!res.ok) {
-    let message = `Upload failed (${res.status})`;
-    try {
-      const data = await res.json();
-      message = data.message || data.error || message;
-    } catch {}
+    const { message } = parseErrorPayload(text, res.status);
     throw new Error(message);
   }
-  return res.json();
+  if (!text) return null;
+  return JSON.parse(text);
 }
 
-function buildQuery(filter, sort, limit) {
-  const params = new URLSearchParams();
-  if (filter && typeof filter === "object") {
-    for (const [key, value] of Object.entries(filter)) {
-      if (value !== undefined && value !== null && value !== "") {
-        params.append(key, String(value));
-      }
-    }
-  }
-  if (sort) {
-    const desc = sort.startsWith("-");
-    const field = desc ? sort.slice(1) : sort;
-    params.append("sort", `${field},${desc ? "desc" : "asc"}`);
-  }
-  if (limit) params.append("size", String(limit));
-  if (limit) params.append("page", "0");
-  return params.toString();
+export function asArray(payload) {
+  if (!payload) return [];
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.projects)) return payload.projects;
+  if (Array.isArray(payload.content)) return payload.content;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.users)) return payload.users;
+  return [];
 }
 
-export { request, uploadRequest, buildQuery, API_BASE_URL };
+export { request, uploadRequest, API_BASE_URL };
