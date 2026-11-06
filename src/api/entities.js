@@ -256,7 +256,7 @@ export const entities = {
           method: "POST",
           body: JSON.stringify({
             contractId: data.contractId || data.contract_id,
-            providerName: data.providerName || (data.method === "Orange Money" ? "ORANGE_MONEY" : "WAVE"),
+            providerName: data.providerName || "PAYDUNYA",
             customerPhone: data.customerPhone || data.phone,
             successUrl: data.successUrl || `${window.location.origin}/wallet`,
             errorUrl: data.errorUrl || `${window.location.origin}/wallet`,
