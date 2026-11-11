@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatMoney, COMMISSION_RATE } from "@/lib/mockData";
+import { api } from "@/api/apiClient";
 import { useAuth } from "@/lib/AuthContext";
 import { fetchContractsForUser } from "@/lib/contractView";
 
@@ -14,6 +16,23 @@ export default function Contracts() {
   const { user } = useAuth();
   const [all, setAll] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [payingId, setPayingId] = useState(null);
+
+  const payContract = async (contractId) => {
+    setPayingId(contractId);
+    try {
+      const payment = await api.entities.WalletTransaction.create({ contractId });
+      if (payment?.checkoutUrl) {
+        window.location.href = payment.checkoutUrl;
+        return;
+      }
+      window.location.href = "/wallet";
+    } catch (err) {
+      alert(err.message || "Impossible d'initier le paiement PayDunya.");
+    } finally {
+      setPayingId(null);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -66,7 +85,12 @@ export default function Contracts() {
                             <Link to={`/messages?to=${c.freelancerId}&name=${encodeURIComponent(c.freelancerName || "")}&project=${encodeURIComponent(c.title || "")}`} className="text-xs text-brand hover:underline">Contacter le freelance</Link>
                           )}
                         </div>
-                        <Badge variant={statusColor[c.status] || "secondary"}>{c.status}</Badge>
+                        {user?.id && String(user.id) === String(c.clientId) && !c.isPaid && (
+                          <Button size="sm" disabled={payingId === c.id} onClick={() => payContract(c.id)}>
+                            {payingId === c.id ? "Redirection…" : "Payer (escrow)"}
+                          </Button>
+                        )}
+                        <Badge variant={statusColor[c.status] || "secondary"}>{c.isPaid ? "Payé" : c.status}</Badge>
                       </div>
                     </div>
                   </Card>

@@ -258,6 +258,7 @@ export const entities = {
             contractId: data.contractId || data.contract_id,
             providerName: data.providerName || "PAYDUNYA",
             customerPhone: data.customerPhone || data.phone,
+            channel: data.channel,
             successUrl: data.successUrl || `${window.location.origin}/wallet`,
             errorUrl: data.errorUrl || `${window.location.origin}/wallet`,
           }),
@@ -265,6 +266,16 @@ export const entities = {
       }
       throw new Error("Les dépôts se font via un contrat (Wave ou Orange Money).");
     },
+    methods: () => request("/api/payments/methods"),
+    config: () => request("/api/payments/config"),
+    verify: (id) => request(`/api/payments/${id}/verify`, { method: "POST" }),
+    softpay: (id, data) => request(`/api/payments/${id}/softpay`, {
+      method: "POST",
+      body: JSON.stringify({
+        channel: data.channel,
+        customerPhone: data.customerPhone || data.phone,
+      }),
+    }),
   },
 
   Notification: {

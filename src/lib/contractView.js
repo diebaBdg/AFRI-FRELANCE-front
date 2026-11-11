@@ -21,6 +21,8 @@ export const toContractView = (rec) => ({
   status: STATUS_LABEL[rec.status] || "Active",
   startDate: rec.created_date ? new Date(rec.created_date).toLocaleDateString("fr-FR") : "",
   endDate: rec.delay_days ? `+${rec.delay_days} j` : "",
+  clientId: rec.client_id,
+  isPaid: rec.isPaid === true,
 });
 
 export async function fetchContractsForUser(userId) {
